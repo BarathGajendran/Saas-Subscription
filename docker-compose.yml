@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # 1. MySQL Database Container
+  db:
+    image: mysql:8.0
+    container_name: subguard-db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "smartspend"
+    volumes:
+      # Automatically initialize database schema and seeds on startup
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./database/seeds.sql:/docker-entrypoint-initdb.d/2_seeds.sql
+      # Persist MySQL data locally
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306" # Maps MySQL standard internal 3306 to host 3307
+    restart: always
+
+  # 2. Flask AI Service
+  ai:
+    build: ./ai
+    container_name: subguard-ai
+    ports:
+      - "5005:5005"
+    restart: always
+
+  # 3. Flask Backend Service
+  backend:
+    build: ./backend_flask
+    container_name: subguard-backend
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=
+      - DB_NAME=smartspend
+      - AI_SERVICE_URL=http://ai:5005
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - ai
+    restart: always
+
+  # 4. Frontend UI & Nginx Web Server
+  frontend:
+    build: ./frontend
+    container_name: subguard-frontend
+    ports:
+      - "3000:80" # Map host 3000 to Nginx container 80
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  mysql_data:

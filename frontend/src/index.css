@@ -1,0 +1,366 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+:root {
+  --bg-primary: #040a05; /* Deep Greenish Black */
+  --bg-secondary: #0a180c; /* Dark Forest Jade */
+  --bg-card: rgba(10, 24, 12, 0.7); /* Translucent Greenish Black */
+  --bg-glass: rgba(10, 24, 12, 0.45);
+  
+  --border-color: rgba(16, 185, 129, 0.15); /* Green border */
+  --border-glow: rgba(220, 38, 38, 0.15); /* Faint Crimson Red border glow */
+  
+  --text-primary: #f0f7f2; /* Soft Mint White - Very Bright */
+  --text-secondary: #a8d9b4; /* Bright Mint Green - Highly Readable */
+  --text-muted: #7da888; /* Muted Mint - High Contrast */
+  
+  --color-primary: #10b981; /* Emerald Green */
+  --color-secondary: #dc2626; /* Crimson Red */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+  --color-info: #06b6d4;
+  
+  --grad-primary: linear-gradient(135deg, #064e3b 0%, #10b981 100%); /* Green Emerald Gradient */
+  --grad-success: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  --grad-danger: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+  --grad-warning: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  --grad-info: linear-gradient(135deg, #0891b2 0%, #0369a1 100%);
+  --grad-dark: linear-gradient(135deg, #081c0f 0%, #040a05 100%);
+  --grad-glow: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(220, 38, 38, 0.05) 100%);
+
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(220, 38, 38, 0.05) 0px, transparent 40%), /* Faint Red glow that can't be seen */
+    radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+h1 { font-size: 2.6rem !important; }
+h2 { font-size: 2.2rem !important; }
+h3 { font-size: 1.9rem !important; }
+h4 { font-size: 1.6rem !important; }
+h5 { font-size: 1.35rem !important; }
+
+/* Glassmorphism card styles */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.glass-card:hover {
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 12px 40px 0 rgba(16, 185, 129, 0.12);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  border-radius: 10px !important;
+  padding: 0.75rem 1rem !important;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast) !important;
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+  outline: none !important;
+}
+
+.glass-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+select.glass-input option,
+.glass-input option {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Buttons */
+.btn-grad {
+  background: var(--grad-primary);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+}
+
+.btn-grad:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  filter: brightness(1.1);
+  color: white;
+}
+
+.btn-grad:active {
+  transform: translateY(0);
+}
+
+/* Tables styling */
+.glass-table {
+  color: var(--text-primary) !important;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.glass-table thead th {
+  border: none !important;
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding: 1rem !important;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.glass-table tbody tr {
+  background: transparent !important;
+  background-color: transparent !important;
+  transition: background var(--transition-fast);
+}
+
+.glass-table tbody td {
+  padding: 1.25rem 1rem !important;
+  border-top: 1px solid var(--border-color) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  background-color: var(--bg-secondary) !important; /* Theme background */
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  transition: background-color var(--transition-fast) !important;
+}
+
+.glass-table tbody tr:hover td {
+  background-color: rgba(16, 185, 129, 0.08) !important; /* Hover highlight from theme */
+  background: rgba(16, 185, 129, 0.08) !important;
+}
+
+.glass-table tbody td:first-child {
+  border-left: 1px solid var(--border-color) !important;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.glass-table tbody td:last-child {
+  border-right: 1px solid var(--border-color) !important;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Sidebar navigation */
+.sidebar-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-link:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.sidebar-link.active {
+  color: white;
+  background: var(--grad-primary);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* AI badge & score display */
+.score-circle {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(var(--color-primary) calc(var(--score-deg) * 1deg), rgba(255,255,255,0.05) 0deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-circle::before {
+  content: '';
+  position: absolute;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+}
+
+.score-value {
+  position: relative;
+  z-index: 1;
+  font-size: 1.85rem;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Notifications / Alert Banner */
+.custom-alert {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 12px;
+  color: #fbbf24;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.custom-alert-danger {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  color: #fca5a5;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Keyframe animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in-up {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* All Lucide/SVG logos and icons */
+svg {
+  stroke-width: 2.2px !important; /* Bolder, clearer lines */
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: crisp-edges !important;
+}
+
+/* Align and highlight input icons/logos */
+.input-group-text {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--border-color) !important;
+  border-right: none !important;
+  padding-left: 0.95rem !important; /* Move logo a little side to center it better */
+  padding-right: 0.65rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.input-group-text svg {
+  color: var(--color-primary) !important;
+  stroke-width: 2.4px !important; /* Ensure prefixes are extra sharp */
+  filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.25)); /* Faint highlight glow */
+  transition: transform var(--transition-fast), filter var(--transition-fast) !important;
+}
+
+/* Subtle glow interaction when input is focused */
+.input-group:focus-within .input-group-text svg {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.5));
+}
+
+.input-group:focus-within .input-group-text {
+  border-color: var(--color-primary) !important;
+}
+
+/* Fix rounded corners inside input-group */
+.input-group > .glass-input {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.input-group > .input-group-text {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+}
+
+/* Highlight icons in input groups, search bars, filters, and calendars */
+.input-group-text svg,
+.input-group svg,
+.glass-input + svg,
+svg.text-muted,
+svg.text-secondary {
+  color: var(--color-primary) !important;
+}
+
+/* Profile link hover and active sidebar states */
+.hover-profile {
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.hover-profile:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.active-profile {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border: 1px solid rgba(16, 185, 129, 0.2) !important;
+}
+
+/* Enforced text contrast overrides */
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+.text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.text-white-50 {
+  color: rgba(240, 247, 242, 0.65) !important; /* Brighter white-50 for high readability */
+}
