@@ -35,35 +35,65 @@ AI_SERVICE_URL = os.environ.get("AI_SERVICE_URL", "http://localhost:5005")
 
 def get_db():
     if 'db' not in g:
-        db_type = os.environ.get("DB_TYPE", "mysql").lower()
-        db_host = os.environ.get("DB_HOST", "127.0.0.1")
-        if "postgres" in db_type or "supabase" in db_host or "postgres" in db_host or "pooler.supabase.com" in db_host:
-            db_port = int(os.environ.get("DB_PORT", 5432))
-            db_user = os.environ.get("DB_USER", "postgres")
-            db_password = os.environ.get("DB_PASSWORD", "")
-            db_name = os.environ.get("DB_NAME", "postgres")
-            g.db_type = "postgres"
-            g.db = psycopg2.connect(
-                host=db_host,
-                port=db_port,
-                user=db_user,
-                password=db_password,
-                database=db_name
-            )
+        db_url = os.environ.get("DATABASE_URL") or os.environ.get("DB_URL")
+        if db_url:
+            from urllib.parse import urlparse
+            result = urlparse(db_url)
+            db_host = result.hostname
+            db_port = result.port
+            db_user = result.username
+            db_password = result.password
+            db_name = result.path.lstrip('/')
+            
+            if "postgres" in result.scheme or "postgresql" in result.scheme:
+                g.db_type = "postgres"
+                g.db = psycopg2.connect(
+                    host=db_host,
+                    port=db_port or 5432,
+                    user=db_user or "postgres",
+                    password=db_password or "",
+                    database=db_name or "postgres"
+                )
+            else:
+                g.db_type = "mysql"
+                g.db = MySQLdb.connect(
+                    host=db_host or "127.0.0.1",
+                    port=db_port or 3307,
+                    user=db_user or "root",
+                    passwd=db_password or "",
+                    db=db_name or "smartspend",
+                    charset="utf8mb4"
+                )
         else:
-            db_port = int(os.environ.get("DB_PORT", 3307))
-            db_user = os.environ.get("DB_USER", "root")
-            db_password = os.environ.get("DB_PASSWORD", "")
-            db_name = os.environ.get("DB_NAME", "smartspend")
-            g.db_type = "mysql"
-            g.db = MySQLdb.connect(
-                host=db_host,
-                port=db_port,
-                user=db_user,
-                passwd=db_password,
-                db=db_name,
-                charset="utf8mb4"
-            )
+            db_type = os.environ.get("DB_TYPE", "mysql").lower()
+            db_host = os.environ.get("DB_HOST", "127.0.0.1")
+            if "postgres" in db_type or "supabase" in db_host or "postgres" in db_host or "pooler.supabase.com" in db_host:
+                db_port = int(os.environ.get("DB_PORT", 5432))
+                db_user = os.environ.get("DB_USER", "postgres")
+                db_password = os.environ.get("DB_PASSWORD", "")
+                db_name = os.environ.get("DB_NAME", "postgres")
+                g.db_type = "postgres"
+                g.db = psycopg2.connect(
+                    host=db_host,
+                    port=db_port,
+                    user=db_user,
+                    password=db_password,
+                    database=db_name
+                )
+            else:
+                db_port = int(os.environ.get("DB_PORT", 3307))
+                db_user = os.environ.get("DB_USER", "root")
+                db_password = os.environ.get("DB_PASSWORD", "")
+                db_name = os.environ.get("DB_NAME", "smartspend")
+                g.db_type = "mysql"
+                g.db = MySQLdb.connect(
+                    host=db_host,
+                    port=db_port,
+                    user=db_user,
+                    passwd=db_password,
+                    db=db_name,
+                    charset="utf8mb4"
+                )
     return g.db
 
 @app.teardown_appcontext
