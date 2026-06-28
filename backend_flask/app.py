@@ -19,15 +19,7 @@ from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 
 app = Flask(__name__)
-# Enable CORS for the Vite frontend origins
-CORS(app, resources={r"/api/*": {"origins": [
-    "http://localhost:5173", 
-    "http://127.0.0.1:5173", 
-    "http://localhost:5174", 
-    "http://127.0.0.1:5174",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000"
-]}}, supports_credentials=True)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Secret key for JWT signing - matching the Spring Boot application configuration
 SECRET_KEY = "9a67471ec639e4d58855cf83d2e67df142646d5c6b907e5c5c165d5c0e25df5a"
