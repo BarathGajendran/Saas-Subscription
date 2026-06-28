@@ -770,6 +770,19 @@ def get_ai_insights():
         }
         return jsonify(fallback_res), 200
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    from werkzeug.exceptions import HTTPException
+    if isinstance(e, HTTPException):
+        return e
+    import traceback
+    tb = traceback.format_exc()
+    return jsonify({
+        "error": "Internal Server Error",
+        "message": str(e),
+        "traceback": tb
+    }), 500
+
 if __name__ == '__main__':
     # Start on port 8080 (matching Spring Boot port)
     app.run(host='0.0.0.0', port=8080, debug=True)
