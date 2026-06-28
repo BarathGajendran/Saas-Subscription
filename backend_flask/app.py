@@ -2,8 +2,16 @@ import os
 import sys
 import jwt
 import bcrypt
-import MySQLdb
 import requests
+try:
+    import MySQLdb
+except ImportError:
+    MySQLdb = None
+
+try:
+    import psycopg2
+except ImportError:
+    psycopg2 = None
 from datetime import datetime, timedelta, date
 from decimal import Decimal
 from functools import wraps
@@ -27,20 +35,35 @@ AI_SERVICE_URL = os.environ.get("AI_SERVICE_URL", "http://localhost:5005")
 
 def get_db():
     if 'db' not in g:
+        db_type = os.environ.get("DB_TYPE", "mysql").lower()
         db_host = os.environ.get("DB_HOST", "127.0.0.1")
-        db_port = int(os.environ.get("DB_PORT", 3307))
-        db_user = os.environ.get("DB_USER", "root")
-        db_password = os.environ.get("DB_PASSWORD", "")
-        db_name = os.environ.get("DB_NAME", "smartspend")
-        
-        g.db = MySQLdb.connect(
-            host=db_host,
-            port=db_port,
-            user=db_user,
-            passwd=db_password,
-            db=db_name,
-            charset="utf8mb4"
-        )
+        if "postgres" in db_type or "supabase" in db_host or "postgres" in db_host or "pooler.supabase.com" in db_host:
+            db_port = int(os.environ.get("DB_PORT", 5432))
+            db_user = os.environ.get("DB_USER", "postgres")
+            db_password = os.environ.get("DB_PASSWORD", "")
+            db_name = os.environ.get("DB_NAME", "postgres")
+            g.db_type = "postgres"
+            g.db = psycopg2.connect(
+                host=db_host,
+                port=db_port,
+                user=db_user,
+                password=db_password,
+                database=db_name
+            )
+        else:
+            db_port = int(os.environ.get("DB_PORT", 3307))
+            db_user = os.environ.get("DB_USER", "root")
+            db_password = os.environ.get("DB_PASSWORD", "")
+            db_name = os.environ.get("DB_NAME", "smartspend")
+            g.db_type = "mysql"
+            g.db = MySQLdb.connect(
+                host=db_host,
+                port=db_port,
+                user=db_user,
+                passwd=db_password,
+                db=db_name,
+                charset="utf8mb4"
+            )
     return g.db
 
 @app.teardown_appcontext
@@ -219,13 +242,21 @@ def add_subscription():
     cursor = db.cursor()
     
     try:
-        cursor.execute(
-            "INSERT INTO subscriptions (user_id, name, category, amount, billing_cycle, next_renewal_date, utilization_rate, last_used_date) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-            (g.user_id, name, category, amount, billing_cycle, next_renewal_date, utilization_rate, last_used_date)
-        )
+        if g.get('db_type') == 'postgres':
+            cursor.execute(
+                "INSERT INTO subscriptions (user_id, name, category, amount, billing_cycle, next_renewal_date, utilization_rate, last_used_date) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
+                (g.user_id, name, category, amount, billing_cycle, next_renewal_date, utilization_rate, last_used_date)
+            )
+            sub_id = cursor.fetchone()[0]
+        else:
+            cursor.execute(
+                "INSERT INTO subscriptions (user_id, name, category, amount, billing_cycle, next_renewal_date, utilization_rate, last_used_date) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                (g.user_id, name, category, amount, billing_cycle, next_renewal_date, utilization_rate, last_used_date)
+            )
+            sub_id = cursor.lastrowid
         db.commit()
-        sub_id = cursor.lastrowid
         
         return jsonify({
             "id": sub_id,
@@ -459,11 +490,18 @@ def set_budget():
             )
             b_id = existing[0]
         else:
-            cursor.execute(
-                "INSERT INTO budgets (user_id, category, amount, month) VALUES (%s, %s, %s, %s)",
-                (g.user_id, category, amount, month)
-            )
-            b_id = cursor.lastrowid
+            if g.get('db_type') == 'postgres':
+                cursor.execute(
+                    "INSERT INTO budgets (user_id, category, amount, month) VALUES (%s, %s, %s, %s) RETURNING id",
+                    (g.user_id, category, amount, month)
+                )
+                b_id = cursor.fetchone()[0]
+            else:
+                cursor.execute(
+                    "INSERT INTO budgets (user_id, category, amount, month) VALUES (%s, %s, %s, %s)",
+                    (g.user_id, category, amount, month)
+                )
+                b_id = cursor.lastrowid
             
         db.commit()
         return jsonify({
